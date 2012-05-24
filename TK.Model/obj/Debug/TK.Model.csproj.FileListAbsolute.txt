@@ -1,0 +1,6 @@
+C:\Users\terberge\Documents\Visual Studio 2010\Projects\TK\TK.Model\bin\Debug\TK.Model.dll
+C:\Users\terberge\Documents\Visual Studio 2010\Projects\TK\TK.Model\bin\Debug\TK.Model.pdb
+C:\Users\terberge\Documents\Visual Studio 2010\Projects\TK\TK.Model\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\terberge\Documents\Visual Studio 2010\Projects\TK\TK.Model\obj\Debug\TK.Model.dll
+C:\Users\terberge\Documents\Visual Studio 2010\Projects\TK\TK.Model\obj\Debug\TK.Model.pdb
+C:\Users\terberge\Documents\Visual Studio 2010\Projects\TK\TK.Model\bin\Debug\TK.Model.dll.config

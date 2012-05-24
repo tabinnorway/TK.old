@@ -1,0 +1,27 @@
+﻿@{
+    ViewBag.Title = "Verktøy";
+}
+
+<h2>Util</h2>
+
+@using (Html.BeginForm( "Index", "Util", FormMethod.Post, new { @enctype = "multipart/form-data"})) {
+    <table>
+        <tr>
+            <td>Last opp arrangement csv</td>
+            <td><input type="file" name="files[0]" id="ArrangementCSV" /></td>
+        </tr>
+        <tr>
+            <td>Last opp medlememr csv</td>
+            <td><input type="file" name="files[1]" id="MedlemmerCSV" /></td>
+        </tr>
+        <tr>
+            <td>Last opp terningkast csv</td>
+            <td><input type="file" name="files[2]" id="TerningkastCSV" /></td>
+        </tr>
+        <tr>
+            <td>Kinosaler csv</td>
+            <td><input type="file" name="files[3]" id="KinosalerCSV" /></td>
+        </tr>
+    </table>
+    <input type="submit" />
+}

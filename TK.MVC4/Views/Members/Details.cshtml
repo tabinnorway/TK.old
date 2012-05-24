@@ -1,0 +1,99 @@
+﻿@model MemberVM
+
+@using TK.MVC4.Models;
+
+@{
+    ViewBag.Title = Model.Nickname;
+}
+
+<fieldset style="width:1000px">
+    <legend>@Html.DisplayFor(model => model.Nickname)</legend>
+
+    <table>
+        <tr>
+            <td>
+                <table>
+                    <tr>
+                        <td>@Html.DisplayNameFor(model => model.Lastname)</td>
+                        <td>@Html.DisplayFor(model => model.Lastname)</td>
+	                </tr>
+	                <tr>
+                        <td>@Html.DisplayNameFor(model => model.FirstName)</td>
+                        <td>@Html.DisplayFor(model => model.FirstName)</td>
+	                </tr>
+	                <tr>
+                        <td>@Html.DisplayNameFor(model => model.MiddleName)</td>
+                        <td>@Html.DisplayFor(model => model.MiddleName)</td>
+	                </tr>
+	                <tr>
+                        <td>@Html.DisplayNameFor(model => model.Email)</td>
+                        <td>@Html.DisplayFor(model => model.Email)</td>
+	                </tr>
+	                <tr>
+                        <td>@Html.DisplayNameFor(model => model.Phone)</td>
+                        <td>@Html.DisplayFor(model => model.Phone)</td>
+	                </tr>
+	                <tr>
+                        <td>@Html.DisplayNameFor(model => model.SortOrder)</td>
+                        <td>@Html.DisplayFor(model => model.SortOrder)</td>
+	                </tr>
+	                <tr>
+                        <td>@Html.DisplayNameFor(model => model.Active)</td>
+                        <td>@Html.DisplayFor(model => model.Active)</td>
+	                </tr>
+                </table>
+            </td>
+            <td>
+                <table>
+                    <tr>
+                        <td># arrangement</td>
+                        <td>@Model.MemberEventScores.Count()</td>
+                    </tr>
+                    <tr>
+                        <td># arrangement i fjor</td>
+                        <td>@Model.EventsLastYear</td>
+                    </tr>
+                    <tr>
+                        <td># arrangement i år</td>
+                        <td>@Model.EventsThisYear</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><hr /></td>
+                    </tr>
+                    <tr>
+                        <td>Snitt terning</td>
+                        <td>@string.Format( "{0:#.##}", Model.AvgTotal )</td>
+                    </tr>
+                    <tr>
+                        <td>Snitt terning i fjor</td>
+                        <td>@string.Format("{0:#.##}", Model.AvgLastYear)</td>
+                    </tr>
+                    <tr>
+                        <td>Snitt terning i år</td>
+                        <td>@string.Format("{0:#.##}", Model.AvgThisYear)</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <table id="filmerTable" class="data-table">
+        <thead>
+            <tr><th>Dato</th>  <th>Tittel</th>  <th>Terning</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var memberScore in Model.MemberEventScores.OrderByDescending( s => s.Event.Date)) {
+                <tr>
+                    <td>@string.Format( "{0:yyyy/MM/dd}", memberScore.Event.Date)</td>
+                    <td>@memberScore.Event.Name</td>
+                    <td>@memberScore.Score</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</fieldset>
+
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id=Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

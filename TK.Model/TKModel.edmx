@@ -1,0 +1,390 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="TKModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+        <EntityContainer Name="TKModelStoreContainer">
+          <EntitySet Name="Events" EntityType="TKModel.Store.Events" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="EventTypes" EntityType="TKModel.Store.EventTypes" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Locations" EntityType="TKModel.Store.Locations" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="MemberEventScores" EntityType="TKModel.Store.MemberEventScores" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Members" EntityType="TKModel.Store.Members" store:Type="Tables" Schema="dbo" />
+          <AssociationSet Name="FK_Events_EventTypes" Association="TKModel.Store.FK_Events_EventTypes">
+            <End Role="EventTypes" EntitySet="EventTypes" />
+            <End Role="Events" EntitySet="Events" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Events_Locations" Association="TKModel.Store.FK_Events_Locations">
+            <End Role="Locations" EntitySet="Locations" />
+            <End Role="Events" EntitySet="Events" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MemberEventScores_Events" Association="TKModel.Store.FK_MemberEventScores_Events">
+            <End Role="Events" EntitySet="Events" />
+            <End Role="MemberEventScores" EntitySet="MemberEventScores" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MemberEventScores_Members" Association="TKModel.Store.FK_MemberEventScores_Members">
+            <End Role="Members" EntitySet="Members" />
+            <End Role="MemberEventScores" EntitySet="MemberEventScores" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Events">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="128" />
+          <Property Name="Date" Type="date" Nullable="false" />
+          <Property Name="LocationId" Type="bigint" Nullable="false" />
+          <Property Name="EventTypeId" Type="bigint" Nullable="false" />
+          <Property Name="IMDBId" Type="nvarchar" MaxLength="64" />
+          <Property Name="FilmwebId" Type="nvarchar" MaxLength="64" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="LastUpdated" Type="datetime" />
+        </EntityType>
+        <EntityType Name="EventTypes">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="128" />
+          <Property Name="Createdat" Type="datetime" Nullable="false" />
+          <Property Name="LastUpdated" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Locations">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="128" />
+          <Property Name="Capacity" Type="int" />
+          <Property Name="Score" Type="int" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="LastUpdated" Type="datetime" />
+        </EntityType>
+        <EntityType Name="MemberEventScores">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="MemberId" Type="bigint" Nullable="false" />
+          <Property Name="EventId" Type="bigint" Nullable="false" />
+          <Property Name="Score" Type="int" Nullable="false" />
+          <Property Name="Comment" Type="text" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="LastUpdated" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Members">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="Nickname" Type="nvarchar" MaxLength="128" />
+          <Property Name="Lastname" Type="nvarchar" MaxLength="128" />
+          <Property Name="FirstName" Type="nvarchar" MaxLength="128" />
+          <Property Name="MiddleName" Type="nvarchar" MaxLength="128" />
+          <Property Name="Email" Type="nvarchar" MaxLength="128" />
+          <Property Name="Phone" Type="nvarchar" MaxLength="32" />
+          <Property Name="SortOrder" Type="int" Nullable="false" />
+          <Property Name="Active" Type="bit" Nullable="false" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="LastUpdated" Type="datetime" />
+          <Property Name="Fodselsdato" Type="datetime" />
+        </EntityType>
+        <Association Name="FK_Events_EventTypes">
+          <End Role="EventTypes" Type="TKModel.Store.EventTypes" Multiplicity="1" />
+          <End Role="Events" Type="TKModel.Store.Events" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EventTypes">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Events">
+              <PropertyRef Name="EventTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Events_Locations">
+          <End Role="Locations" Type="TKModel.Store.Locations" Multiplicity="1" />
+          <End Role="Events" Type="TKModel.Store.Events" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Locations">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Events">
+              <PropertyRef Name="LocationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MemberEventScores_Events">
+          <End Role="Events" Type="TKModel.Store.Events" Multiplicity="1" />
+          <End Role="MemberEventScores" Type="TKModel.Store.MemberEventScores" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Events">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MemberEventScores">
+              <PropertyRef Name="EventId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MemberEventScores_Members">
+          <End Role="Members" Type="TKModel.Store.Members" Multiplicity="1" />
+          <End Role="MemberEventScores" Type="TKModel.Store.MemberEventScores" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Members">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MemberEventScores">
+              <PropertyRef Name="MemberId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="TKModel" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+        <EntityContainer Name="TKEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Events" EntityType="TKModel.Event" />
+          <EntitySet Name="EventTypes" EntityType="TKModel.EventType" />
+          <EntitySet Name="Locations" EntityType="TKModel.Location" />
+          <EntitySet Name="MemberEventScores" EntityType="TKModel.MemberEventScore" />
+          <EntitySet Name="Members" EntityType="TKModel.Member" />
+          <AssociationSet Name="FK_Events_EventTypes" Association="TKModel.FK_Events_EventTypes">
+            <End Role="EventTypes" EntitySet="EventTypes" />
+            <End Role="Events" EntitySet="Events" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Events_Locations" Association="TKModel.FK_Events_Locations">
+            <End Role="Locations" EntitySet="Locations" />
+            <End Role="Events" EntitySet="Events" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MemberEventScores_Events" Association="TKModel.FK_MemberEventScores_Events">
+            <End Role="Events" EntitySet="Events" />
+            <End Role="MemberEventScores" EntitySet="MemberEventScores" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MemberEventScores_Members" Association="TKModel.FK_MemberEventScores_Members">
+            <End Role="Members" EntitySet="Members" />
+            <End Role="MemberEventScores" EntitySet="MemberEventScores" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Event">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="128" Unicode="true" FixedLength="false" />
+          <Property Name="Date" Type="DateTime" Nullable="false" />
+          <Property Name="LocationId" Type="Int64" Nullable="false" />
+          <Property Name="EventTypeId" Type="Int64" Nullable="false" />
+          <Property Name="IMDBId" Type="String" MaxLength="64" Unicode="true" FixedLength="false" />
+          <Property Name="FilmwebId" Type="String" MaxLength="64" Unicode="true" FixedLength="false" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" />
+          <Property Name="LastUpdated" Type="DateTime" />
+          <NavigationProperty Name="EventType" Relationship="TKModel.FK_Events_EventTypes" FromRole="Events" ToRole="EventTypes" />
+          <NavigationProperty Name="Location" Relationship="TKModel.FK_Events_Locations" FromRole="Events" ToRole="Locations" />
+          <NavigationProperty Name="MemberEventScores" Relationship="TKModel.FK_MemberEventScores_Events" FromRole="Events" ToRole="MemberEventScores" />
+        </EntityType>
+        <EntityType Name="EventType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="128" Unicode="true" FixedLength="false" />
+          <Property Name="Createdat" Type="DateTime" Nullable="false" />
+          <Property Name="LastUpdated" Type="DateTime" />
+          <NavigationProperty Name="Events" Relationship="TKModel.FK_Events_EventTypes" FromRole="EventTypes" ToRole="Events" />
+        </EntityType>
+        <EntityType Name="Location">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="128" Unicode="true" FixedLength="false" />
+          <Property Name="Capacity" Type="Int32" />
+          <Property Name="Score" Type="Int32" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" />
+          <Property Name="LastUpdated" Type="DateTime" />
+          <NavigationProperty Name="Events" Relationship="TKModel.FK_Events_Locations" FromRole="Locations" ToRole="Events" />
+        </EntityType>
+        <EntityType Name="MemberEventScore">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="MemberId" Type="Int64" Nullable="false" />
+          <Property Name="EventId" Type="Int64" Nullable="false" />
+          <Property Name="Score" Type="Int32" Nullable="false" />
+          <Property Name="Comment" Type="String" MaxLength="Max" Unicode="false" FixedLength="false" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" />
+          <Property Name="LastUpdated" Type="DateTime" Nullable="false" />
+          <NavigationProperty Name="Event" Relationship="TKModel.FK_MemberEventScores_Events" FromRole="MemberEventScores" ToRole="Events" />
+          <NavigationProperty Name="Member" Relationship="TKModel.FK_MemberEventScores_Members" FromRole="MemberEventScores" ToRole="Members" />
+        </EntityType>
+        <EntityType Name="Member">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Nickname" Type="String" MaxLength="128" Unicode="true" FixedLength="false" />
+          <Property Name="Lastname" Type="String" MaxLength="128" Unicode="true" FixedLength="false" />
+          <Property Name="FirstName" Type="String" MaxLength="128" Unicode="true" FixedLength="false" />
+          <Property Name="MiddleName" Type="String" MaxLength="128" Unicode="true" FixedLength="false" />
+          <Property Name="Email" Type="String" MaxLength="128" Unicode="true" FixedLength="false" />
+          <Property Name="Phone" Type="String" MaxLength="32" Unicode="true" FixedLength="false" />
+          <Property Name="SortOrder" Type="Int32" Nullable="false" />
+          <Property Name="Active" Type="Boolean" Nullable="false" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" />
+          <Property Name="LastUpdated" Type="DateTime" />
+          <NavigationProperty Name="MemberEventScores" Relationship="TKModel.FK_MemberEventScores_Members" FromRole="Members" ToRole="MemberEventScores" />
+          <Property Type="DateTime" Name="Fodselsdato" />
+        </EntityType>
+        <Association Name="FK_Events_EventTypes">
+          <End Role="EventTypes" Type="TKModel.EventType" Multiplicity="1" />
+          <End Role="Events" Type="TKModel.Event" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EventTypes">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Events">
+              <PropertyRef Name="EventTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Events_Locations">
+          <End Role="Locations" Type="TKModel.Location" Multiplicity="1" />
+          <End Role="Events" Type="TKModel.Event" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Locations">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Events">
+              <PropertyRef Name="LocationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MemberEventScores_Events">
+          <End Role="Events" Type="TKModel.Event" Multiplicity="1" />
+          <End Role="MemberEventScores" Type="TKModel.MemberEventScore" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Events">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MemberEventScores">
+              <PropertyRef Name="EventId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MemberEventScores_Members">
+          <End Role="Members" Type="TKModel.Member" Multiplicity="1" />
+          <End Role="MemberEventScores" Type="TKModel.MemberEventScore" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Members">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MemberEventScores">
+              <PropertyRef Name="MemberId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="TKModelStoreContainer" CdmEntityContainer="TKEntities">
+          <EntitySetMapping Name="Events"><EntityTypeMapping TypeName="TKModel.Event"><MappingFragment StoreEntitySet="Events">
+            <ScalarProperty Name="Id" ColumnName="Id" />
+            <ScalarProperty Name="Name" ColumnName="Name" />
+            <ScalarProperty Name="Date" ColumnName="Date" />
+            <ScalarProperty Name="LocationId" ColumnName="LocationId" />
+            <ScalarProperty Name="EventTypeId" ColumnName="EventTypeId" />
+            <ScalarProperty Name="IMDBId" ColumnName="IMDBId" />
+            <ScalarProperty Name="FilmwebId" ColumnName="FilmwebId" />
+            <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+            <ScalarProperty Name="LastUpdated" ColumnName="LastUpdated" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="EventTypes"><EntityTypeMapping TypeName="TKModel.EventType"><MappingFragment StoreEntitySet="EventTypes">
+            <ScalarProperty Name="Id" ColumnName="Id" />
+            <ScalarProperty Name="Name" ColumnName="Name" />
+            <ScalarProperty Name="Createdat" ColumnName="Createdat" />
+            <ScalarProperty Name="LastUpdated" ColumnName="LastUpdated" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="Locations"><EntityTypeMapping TypeName="TKModel.Location"><MappingFragment StoreEntitySet="Locations">
+            <ScalarProperty Name="Id" ColumnName="Id" />
+            <ScalarProperty Name="Name" ColumnName="Name" />
+            <ScalarProperty Name="Capacity" ColumnName="Capacity" />
+            <ScalarProperty Name="Score" ColumnName="Score" />
+            <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+            <ScalarProperty Name="LastUpdated" ColumnName="LastUpdated" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="MemberEventScores"><EntityTypeMapping TypeName="TKModel.MemberEventScore"><MappingFragment StoreEntitySet="MemberEventScores">
+            <ScalarProperty Name="Id" ColumnName="Id" />
+            <ScalarProperty Name="MemberId" ColumnName="MemberId" />
+            <ScalarProperty Name="EventId" ColumnName="EventId" />
+            <ScalarProperty Name="Score" ColumnName="Score" />
+            <ScalarProperty Name="Comment" ColumnName="Comment" />
+            <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+            <ScalarProperty Name="LastUpdated" ColumnName="LastUpdated" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="Members"><EntityTypeMapping TypeName="TKModel.Member"><MappingFragment StoreEntitySet="Members">
+            <ScalarProperty Name="Fodselsdato" ColumnName="Fodselsdato" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+            <ScalarProperty Name="Nickname" ColumnName="Nickname" />
+            <ScalarProperty Name="Lastname" ColumnName="Lastname" />
+            <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+            <ScalarProperty Name="MiddleName" ColumnName="MiddleName" />
+            <ScalarProperty Name="Email" ColumnName="Email" />
+            <ScalarProperty Name="Phone" ColumnName="Phone" />
+            <ScalarProperty Name="SortOrder" ColumnName="SortOrder" />
+            <ScalarProperty Name="Active" ColumnName="Active" />
+            <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+            <ScalarProperty Name="LastUpdated" ColumnName="LastUpdated" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="False" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams>
+      <Diagram Name="TKModel">
+        <EntityTypeShape EntityType="TKModel.Event" Width="1.5" PointX="3" PointY="1" Height="3.3263964843749996" IsExpanded="true" />
+        <EntityTypeShape EntityType="TKModel.EventType" Width="1.5" PointX="0.75" PointY="1.625" Height="1.9802864583333335" IsExpanded="true" />
+        <EntityTypeShape EntityType="TKModel.Location" Width="1.5" PointX="0.75" PointY="5.5" Height="2.3648893229166656" IsExpanded="true" />
+        <EntityTypeShape EntityType="TKModel.MemberEventScore" Width="1.5" PointX="5.25" PointY="1.25" Height="2.7494921874999996" IsExpanded="true" />
+        <EntityTypeShape EntityType="TKModel.Member" Width="2.25" PointX="3" PointY="6" Height="3.5186979166666656" IsExpanded="true" />
+        <AssociationConnector Association="TKModel.FK_Events_EventTypes" ManuallyRouted="false">
+          <ConnectorPoint PointX="2.25" PointY="2.6151432291666667" />
+          <ConnectorPoint PointX="3" PointY="2.6151432291666667" />
+        </AssociationConnector>
+        <AssociationConnector Association="TKModel.FK_Events_Locations" ManuallyRouted="false">
+          <ConnectorPoint PointX="2.25" PointY="5.5" />
+          <ConnectorPoint PointX="2.625" PointY="5.125" />
+          <ConnectorPoint PointX="2.625" PointY="2.6631982421875" />
+          <ConnectorPoint PointX="3" PointY="2.6631982421875" />
+        </AssociationConnector>
+        <AssociationConnector Association="TKModel.FK_MemberEventScores_Events" ManuallyRouted="false">
+          <ConnectorPoint PointX="4.5" PointY="2.62474609375" />
+          <ConnectorPoint PointX="5.25" PointY="2.62474609375" />
+        </AssociationConnector>
+        <AssociationConnector Association="TKModel.FK_MemberEventScores_Members" ManuallyRouted="false">
+          <ConnectorPoint PointX="5.25" PointY="7.7593489583333328" />
+          <ConnectorPoint PointX="6.03125" PointY="7.7593489583333328" />
+          <ConnectorPoint PointX="6.03125" PointY="3.9994921874999996" />
+        </AssociationConnector>
+      </Diagram>
+    </Diagrams>
+  </Designer>
+</edmx:Edmx>
