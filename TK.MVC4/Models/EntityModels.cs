@@ -1,35 +1,60 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Runtime.Serialization;
+
+#if(SILVERLIGHT)
+#else
 using System.Web;
 using TK.Model;
 using TK.Model.Servers;
-using System.Text.RegularExpressions;
+#endif
 
+
+#if(SILVERLIGHT)
+namespace TK.ViewModels
+#else
 namespace TK.MVC4.Models
+#endif
 {
+    [DataContract]
     public class EntityVM
     {
+        [DataMember]
         public long Id { get; set; }
+        [DataMember]
         public DateTime CreatedAt { get; set; }
+        [DataMember]
         public DateTime? LastUpdated { get; set; }
     }
 
     /// <summary>
     /// 
     /// </summary>
+    [DataContract]
     public class MemberVM : EntityVM
     {
+        [DataMember]
         public string Nickname { get; set; }
+        [DataMember]
         public string Lastname { get; set; }
+        [DataMember]
         public string FirstName { get; set; }
+        [DataMember]
         public string MiddleName { get; set; }
+        [DataMember]
         public string Email { get; set; }
+        [DataMember]
         public DateTime? Fodselsdato { get; set; }
+        [DataMember]
         public string Phone { get; set; }
+        [DataMember]
         public int SortOrder { get; set; }
+        [DataMember]
         public bool Active { get; set; }
-        public IQueryable<MemberEventScore> MemberEventScores { get; set; }
+        [DataMember]
+        public List<MemberEventScoreVM> MemberEventScores { get; set; }
 
         public int EventsLastYear { get; set; }
         public int EventsThisYear { get; set; }
@@ -37,8 +62,20 @@ namespace TK.MVC4.Models
         public float AvgThisYear { get; set; }
         public float AvgLastYear { get; set; }
 
+        public string FullName {
+            get {
+                return FirstName + (MiddleName != null ? " " + MiddleName : "") + " " + Lastname;
+            }
+        }
+
+#if(!SILVERLIGHT)
         public static MemberVM FromMember(Member member) {
             if (member == null) { return null; }
+            List<MemberEventScoreVM> mesList = new List<MemberEventScoreVM>();
+            if (member.MemberEventScores != null) {
+                mesList = (from mes in member.MemberEventScores
+                           select MemberEventScoreVM.FromMemberEventScore(mes)).ToList();
+            }
             return new MemberVM {
                 Active = member.Active,
                 CreatedAt = member.CreatedAt,
@@ -52,7 +89,7 @@ namespace TK.MVC4.Models
                 Nickname = member.Nickname,
                 Phone = member.Phone,
                 SortOrder = member.SortOrder,
-                MemberEventScores = member.MemberEventScores != null ? member.MemberEventScores.AsQueryable() : null,
+                MemberEventScores = mesList,
             };
         }
         public Member ToMember() {
@@ -103,38 +140,65 @@ namespace TK.MVC4.Models
                 SortOrder = sortering,
             };
         }
+#endif
     }
 
     /// <summary>
     /// 
     /// </summary>
+    [DataContract]
     public class EventVM : EntityVM
     {
+        [DataMember]
         public DateTime Date { get; set; }
-        public EventType EventType { get; set; }
+        [DataMember]
+        public EventTypeVM EventType { get; set; }
+        [DataMember]
         public long EventTypeId { get; set; }
+        [DataMember]
         public string FilmwebId { get; set; }
+        [DataMember]
         public string IMDBId { get; set; }
-        public Location Location { get; set; }
+        [DataMember]
+        public LocationVM Location { get; set; }
+        [DataMember]
         public long LocationId { get; set; }
+        [DataMember]
         public string Name { get; set; }
+        [DataMember]
+        public List<MemberEventScoreVM> MemberEventScores { get; set; }
+        [DataMember]
+        public float Score { get; set; }
 
-        public static EventVM FromEvent(Event evt) {
-            if (evt == null) { return null; }
+#if(!SILVERLIGHT)
+        public static EventVM FromDataObject(Event evt) {
+            EventVM retval = null;
+            if (evt != null) {
+                retval = new EventVM {
+                    CreatedAt = evt.CreatedAt,
+                    Date = evt.Date,
+                    EventType = EventTypeVM.FromDataObject(evt.EventType),
+                    EventTypeId = evt.EventTypeId,
+                    FilmwebId = evt.FilmwebId,
+                    Id = evt.Id,
+                    IMDBId = evt.IMDBId,
+                    LastUpdated = evt.LastUpdated,
+                    LocationId = evt.LocationId,
+                    Location = LocationVM.FromDataObject(evt.Location),
+                    Name = evt.Name,
+                };
 
-            return new EventVM {
-                CreatedAt = evt.CreatedAt,
-                Date = evt.Date,
-                EventType = evt.EventType,
-                EventTypeId = evt.EventTypeId,
-                FilmwebId = evt.FilmwebId,
-                Id = evt.Id,
-                IMDBId = evt.IMDBId,
-                LastUpdated = evt.LastUpdated,
-                Location = evt.Location,
-                LocationId = evt.LocationId,
-                Name = evt.Name,
-            };
+                List<MemberEventScore> memEvtsScores = evt.MemberEventScores.ToList();
+                if (memEvtsScores != null && memEvtsScores.Count > 0) {
+                    retval.MemberEventScores = (from mes in memEvtsScores
+                                                select MemberEventScoreVM.FromMemberEventScore(mes)).ToList();
+                }
+            }
+            if (retval.MemberEventScores != null && retval.MemberEventScores.Count > 0) {
+                int sum = retval.MemberEventScores.Sum(mes => mes.Score);
+                retval.Score = (float)sum / (float)retval.MemberEventScores.Count;
+            }
+            return retval;
         }
         public static EventVM FromCSVLine(string line) {
             if (line == null) { return null; }
@@ -157,10 +221,10 @@ namespace TK.MVC4.Models
                 IMDBId = imdblink,
                 LastUpdated = DateTime.Now,
                 Location = null,
-                LocationId = (new LocationServer()).GetLocationIdByName(sal),
+                LocationId = (new LocationDataServer()).GetLocationIdByName(sal),
                 Name = name,
                 Id = 0,
-                EventTypeId = (new EventTypeServer()).GetEventTypeIdByName("Film"),
+                EventTypeId = (new EventTypeDataServer()).GetEventTypeIdByName("Film"),
             };
         }
         public Event ToEvent() {
@@ -176,14 +240,24 @@ namespace TK.MVC4.Models
                 Name = this.Name,
             };
         }
+#endif
     }
 
     /// <summary>
     /// 
     /// </summary>
+    [DataContract]
     public class LocationVM : EntityVM
     {
-        public static LocationVM FromLocation(Location loc) {
+        [DataMember]
+        public int? Capacity { get; set; }
+        [DataMember]
+        public string Name { get; set; }
+        [DataMember]
+        public float? Score { get; set; }
+
+#if(!SILVERLIGHT)
+        public static LocationVM FromDataObject(Location loc) {
             if (loc == null) { return null; }
             return new LocationVM {
                 Capacity = loc.Capacity,
@@ -194,14 +268,14 @@ namespace TK.MVC4.Models
                 Score = loc.Score,
             };
         }
-        public Location ToLocation() {
+        public Location ToDataObject() {
             return new Location {
                 Capacity = this.Capacity,
                 CreatedAt = this.CreatedAt,
                 Id = this.Id,
                 LastUpdated = this.LastUpdated,
                 Name = this.Name,
-                Score = this.Score,
+                Score = (int)this.Score,
             };
         }
         public static LocationVM FromCSVLine(string line) {
@@ -213,24 +287,35 @@ namespace TK.MVC4.Models
                 LastUpdated = DateTime.Now,
             };
         }
-
-        public int? Capacity { get; set; }
-        public string Name { get; set; }
-        public int? Score { get; set; }
+#endif
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    [DataContract]
     public class MemberEventScoreVM : EntityVM
     {
+        [DataMember]
+        public string Comment { get; set; }
+        [DataMember]
+        public long EventId { get; set; }
+        [DataMember]
+        public long MemberId { get; set; }
+        [DataMember]
+        public int Score { get; set; }
+
+        public DateTime? Date { get; set; }
+
+#if(!SILVERLIGHT)
         public static MemberEventScoreVM FromMemberEventScore(MemberEventScore mes) {
             if (mes == null) { return null; }
             return new MemberEventScoreVM {
                 Comment = mes.Comment,
                 CreatedAt = mes.CreatedAt,
-                Event = mes.Event,
                 EventId = mes.EventId,
                 Id = mes.Id,
                 LastUpdated = mes.LastUpdated,
-                Member = mes.Member,
                 MemberId = mes.MemberId,
                 Score = mes.Score,
             };
@@ -239,11 +324,9 @@ namespace TK.MVC4.Models
             return new MemberEventScore {
                 Comment = this.Comment,
                 CreatedAt = this.CreatedAt,
-                Event = this.Event,
                 EventId = this.EventId,
                 Id = this.Id,
                 LastUpdated = this.LastUpdated != null ? this.LastUpdated.Value : DateTime.MinValue,
-                Member = this.Member,
                 MemberId = this.MemberId,
                 Score = this.Score,
             };
@@ -260,20 +343,43 @@ namespace TK.MVC4.Models
             Event evt = (new EventDataServer()).GetEventByDate(when);
 
             return new MemberEventScoreVM {
-                Event = null,
                 EventId = evt.Id,
                 Id = 0,
-                Member = null,
                 MemberId = who.Id,
                 Score = score,
             };
         }
+#endif
+    }
 
-        public string Comment { get; set; }
-        public Event Event { get; set; }
-        public long EventId { get; set; }
-        public Member Member { get; set; }
-        public long MemberId { get; set; }
-        public int Score { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    [DataContract]
+    public class EventTypeVM
+    {
+        [DataMember]
+        public long Id { get; set; }
+        [DataMember]
+        public string Name { get; set; }
+        [DataMember]
+        public DateTime Createdat { get; set; }
+        [DataMember]
+        public DateTime? LastUpdated { get; set; }
+
+#if(!SILVERLIGHT)
+        public static EventTypeVM FromDataObject(EventType et) {
+            EventTypeVM retval = null;
+            if (et != null) {
+                retval = new EventTypeVM {
+                    Id = et.Id,
+                    Name = et.Name,
+                    Createdat = et.Createdat,
+                    LastUpdated = et.LastUpdated,
+                };
+            }
+            return retval;
+        }
+#endif
     }
 }

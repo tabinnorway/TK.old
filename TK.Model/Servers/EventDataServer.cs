@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Data.Objects;
 
 namespace TK.Model.Servers
 {
@@ -10,6 +11,10 @@ namespace TK.Model.Servers
         private TKEntities entities = null;
         public EventDataServer() {
             entities = new TKEntities();
+        }
+
+        public IQueryable<Event> GetAllIncludeScores() {
+            return entities.Events.Include("MemberEventScores").Include("EventType").Include("Location").OrderByDescending(e => e.Date);
         }
 
         public Event AddEvent( Event evt, out string error ) {

@@ -13,12 +13,12 @@ namespace TK.MVC4.Controllers
     public class UtilController : Controller
     {
         private EventDataServer evtServer = null;
-        private LocationServer locationServer = null;
+        private LocationDataServer locationServer = null;
         private MemberDataServer memberServer = null;
         private ScoreServer scoreServer = null;
         public UtilController() {
             evtServer = new EventDataServer();
-            locationServer = new LocationServer();
+            locationServer = new LocationDataServer();
             memberServer = new MemberDataServer();
             scoreServer = new ScoreServer();
         }
@@ -91,7 +91,7 @@ namespace TK.MVC4.Controllers
         private void makeLocation(string line, out string error) {
             error = null;
             LocationVM loc = LocationVM.FromCSVLine(line);
-            var locAdded = locationServer.AddLocation(loc.ToLocation(), out error);
+            var locAdded = locationServer.AddLocation(loc.ToDataObject(), out error);
             if (locAdded == null || error != null) {
                 Console.WriteLine(error);
             }

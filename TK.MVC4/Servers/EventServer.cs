@@ -14,8 +14,14 @@ namespace TK.MVC4.Servers
             eventDataServer = new EventDataServer();
         }
 
+        public List<EventVM> GetAllIncludeScores() {
+            var events = eventDataServer.GetAllIncludeScores().ToList();
+            return (from evt in events
+                    select EventVM.FromDataObject(evt)).ToList();
+        }
+
         public EventVM Add(EventVM evt, out string error) {
-            return EventVM.FromEvent(eventDataServer.AddEvent(evt.ToEvent(), out error));
+            return EventVM.FromDataObject(eventDataServer.AddEvent(evt.ToEvent(), out error));
         }
     }
 }

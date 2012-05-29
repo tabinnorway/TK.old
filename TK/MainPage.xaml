@@ -6,6 +6,7 @@
                             xmlns:controls="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls"
                             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                            xmlns:converters="clr-namespace:TK.Converters"
                             FontFamily="{StaticResource PhoneFontFamilyNormal}"
                             FontSize="{StaticResource PhoneFontSizeNormal}"
                             Foreground="{StaticResource PhoneForegroundBrush}"
@@ -19,6 +20,11 @@
 
 	<!--LayoutRoot contains the root grid where all other page content is placed-->
 	<Grid x:Name="LayoutRoot" Background="Transparent">
+        <Grid.Resources>
+            <converters:GenericConverter x:Key="GenericConverter" />
+            <converters:LocationConverter x:Key="LocationConverter" />
+        </Grid.Resources>
+
         <controls:Panorama Title="{Binding ApplicationTitle}">
             <controls:Panorama.Background>
                 <ImageBrush ImageSource="PanoramaBackground.png"/>
@@ -26,17 +32,17 @@
 
             <controls:PanoramaItem Header="{Binding FirstPageName}">
                 <!--Double line list with text wrapping-->
-                <ListBox Margin="0,0,-12,0" ItemsSource="{Binding Movies}">
+                <ListBox Margin="10,0,-12,0" ItemsSource="{Binding Events}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,17">
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                                 <!--Replace rectangle with image-->
-                                <Border Height="100" Width="100" Background="#FFE5001b" Margin="12,0,9,0">
-                                    <TextBlock Text="{Binding Points}" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="NoWrap" FontWeight="Bold" FontSize="48" />
+                                <Border Height="90" Width="118" Background="#FFE5001b" Margin="5,0,0,0">
+                                    <TextBlock Text="{Binding Score,Converter={StaticResource ResourceKey=GenericConverter}}" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="NoWrap" FontWeight="Bold" FontSize="48" />
                                 </Border>
                                 <StackPanel Width="311">
-                                    <TextBlock Text="{Binding Title}" TextWrapping="NoWrap" Style="{StaticResource PhoneTextExtraLargeStyle}"/>
-                                    <TextBlock Text="{Binding SubTitle}" TextWrapping="NoWrap" Margin="12,-6,12,0" Style="{StaticResource PhoneTextSubtleStyle}"/>
+                                    <TextBlock Text="{Binding Name}" TextWrapping="NoWrap" Style="{StaticResource PhoneTextExtraLargeStyle}"/>
+                                    <TextBlock Text="{Binding Date,Converter={StaticResource ResourceKey=GenericConverter}}" TextWrapping="NoWrap" Margin="12,-6,12,0" Style="{StaticResource PhoneTextSubtleStyle}"/>
                                 </StackPanel>
                             </StackPanel>
                         </DataTemplate>
@@ -74,12 +80,52 @@
 
             <controls:PanoramaItem Header="{Binding MembersPageName}">
                 <!--Double line list with text wrapping-->
-                <ListBox Margin="0,0,-12,0" ItemsSource="{Binding Items}">
+                <ListBox Margin="0,0,-12,0" ItemsSource="{Binding Members}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                <!--Replace rectangle with image-->
+                                <Border Height="90" Width="118" Background="#FFE5001b" Margin="5,0,0,0">
+                                    <TextBlock Text="{Binding AvgThisYear,Converter={StaticResource ResourceKey=GenericConverter}}" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="NoWrap" FontWeight="Bold" FontSize="48" />
+                                </Border>
+                                <StackPanel Width="311">
+                                    <TextBlock Text="{Binding FullName}" TextWrapping="NoWrap" Style="{StaticResource PhoneTextExtraLargeStyle}"/>
+                                    <TextBlock Text="{Binding AvgLastYear,Converter={StaticResource ResourceKey=GenericConverter}}" TextWrapping="NoWrap" Margin="12,-6,12,0" Style="{StaticResource PhoneTextSubtleStyle}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </controls:PanoramaItem>
+
+            <controls:PanoramaItem Header="Lokasjoner">
+                <!--Double line list with text wrapping-->
+                <ListBox Margin="0,0,-12,0" ItemsSource="{Binding Locations}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                <!--Replace rectangle with image-->
+                                <Border Height="90" Width="118" Background="#FFE5001b" Margin="5,0,0,0">
+                                    <TextBlock Text="{Binding Score,Converter={StaticResource ResourceKey=GenericConverter}}" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="NoWrap" FontWeight="Bold" FontSize="48" />
+                                </Border>
+                                <StackPanel Width="311">
+                                    <TextBlock Text="{Binding Name}" TextWrapping="NoWrap" Style="{StaticResource PhoneTextExtraLargeStyle}"/>
+                                    <TextBlock Text="{Binding Capacity,Converter={StaticResource ResourceKey=LocationConverter}}" TextWrapping="Wrap" Margin="12,-6,12,0" Style="{StaticResource PhoneTextSubtleStyle}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </controls:PanoramaItem>
+
+
+            <controls:PanoramaItem Header="Event typer">
+                <!--Double line list with text wrapping-->
+                <ListBox Margin="0,0,-12,0" ItemsSource="{Binding EventTypes}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Margin="0,0,0,17" Width="432" Height="78">
-                                <TextBlock Text="{Binding LineOne}" TextWrapping="Wrap" Style="{StaticResource PhoneTextExtraLargeStyle}"/>
-                                <TextBlock Text="{Binding LineTwo}" TextWrapping="Wrap" Margin="12,-6,12,0" Style="{StaticResource PhoneTextSubtleStyle}"/>
+                                <TextBlock Text="{Binding Name}" TextWrapping="Wrap" Style="{StaticResource PhoneTextExtraLargeStyle}"/>
                             </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
@@ -87,19 +133,8 @@
             </controls:PanoramaItem>
 
             <controls:PanoramaItem Header="{Binding SettingsPageName}">
-                <!--Double line list with text wrapping-->
-                <ListBox Margin="0,0,-12,0" ItemsSource="{Binding Items}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Margin="0,0,0,17" Width="432" Height="78">
-                                <TextBlock Text="{Binding LineOne}" TextWrapping="Wrap" Style="{StaticResource PhoneTextExtraLargeStyle}"/>
-                                <TextBlock Text="{Binding LineTwo}" TextWrapping="Wrap" Margin="12,-6,12,0" Style="{StaticResource PhoneTextSubtleStyle}"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                <Button Content="Klikk meg" Height="73" Command="{Binding Path=ButtonCommand}" />
             </controls:PanoramaItem>
-
         </controls:Panorama>
 
     </Grid>

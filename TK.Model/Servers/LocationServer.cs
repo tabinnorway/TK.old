@@ -5,11 +5,11 @@ using System.Text;
 
 namespace TK.Model.Servers
 {
-    public class LocationServer
+    public class LocationDataServer
     {
         private TKEntities entities = null;
         private static Dictionary<string, Location> locationsByName = null;
-        public LocationServer() {
+        public LocationDataServer() {
             entities = new TKEntities();
             if (locationsByName == null) {
                 locationsByName = new Dictionary<string, Location>();
@@ -65,6 +65,10 @@ namespace TK.Model.Servers
             catch {
             }
             return -1;
+        }
+
+        public IQueryable<Location> GetAll() {
+            return entities.Locations.OrderBy(loc => loc.Name);
         }
     }
 }

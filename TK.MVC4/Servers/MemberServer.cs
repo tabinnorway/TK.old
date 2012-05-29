@@ -19,14 +19,16 @@ namespace TK.MVC4.Servers
         }
 
         public List<MemberVM> GetMembers() {
+            List<MemberVM> retval = new List<MemberVM>();
             try {
                 List<Member> members = memberDataServer.Members.OrderBy(m => m.SortOrder).ToList();
-                return (from m in members
-                        select MemberVM.FromMember(m)).ToList();
+                retval =  (from m in members
+                           select MemberVM.FromMember(m)).ToList();
             }
             catch {
             }
-            return new List<MemberVM>();
+            //foreach (var m in retval) { m.MemberEventScores = null; }
+            return retval;
         }
         public MemberVM GetMember(long id) {
             try {

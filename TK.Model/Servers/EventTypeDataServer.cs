@@ -5,10 +5,10 @@ using System.Text;
 
 namespace TK.Model.Servers
 {
-    public class EventTypeServer
+    public class EventTypeDataServer
     {
         private TKEntities entities = null;
-        public EventTypeServer() {
+        public EventTypeDataServer() {
             entities = new TKEntities();
         }
         public long GetEventTypeIdByName(string name) {
@@ -18,6 +18,10 @@ namespace TK.Model.Servers
             catch {
             }
             return -1;
+        }
+
+        public IQueryable<EventType> GetEventTypes() {
+            return entities.EventTypes.OrderBy(et => et.Name);
         }
     }
 }

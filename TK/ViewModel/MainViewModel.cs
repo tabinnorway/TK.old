@@ -1,5 +1,17 @@
 ﻿using GalaSoft.MvvmLight;
 using System.Collections.Generic;
+using GalaSoft.MvvmLight.Command;
+using System.Net;
+using System;
+using System.IO;
+using TK.ViewModels;
+
+using System.Linq;
+
+using Newtonsoft.Json;
+using System.Threading;
+using System.ComponentModel;
+
 
 namespace TK.ViewModel
 {
@@ -17,19 +29,216 @@ namespace TK.ViewModel
     /// </summary>
     public class MainViewModel : ViewModelBase
     {
+        private static string baseUrl = "http://localhost:63306/api/";
+
+        Dictionary<string, string> urls = new Dictionary<string, string> {
+            { "Member", baseUrl + "Member" },
+            { "EventType", baseUrl + "EventType" },
+            { "Location", baseUrl + "Location" },
+            { "Event", baseUrl + "Events" },
+        };
+        Dictionary<string,WaitHandle> waitForUrls = null;
+
+        private Dictionary<long, EventTypeVM> eventTypesById = null;
+        private Dictionary<long, LocationVM> locationsById = null;
+        private Dictionary<long, MemberVM> membersById = null;
+        private Dictionary<long, EventVM> eventsById = null;
+
+        private Dictionary<long, List<MemberEventScoreVM>> eventScoresByUser = null;
+        private Dictionary<long, List<EventVM>> eventsByLocation = null;
+
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
         public MainViewModel() {
-            _movies = new List<MovieVM> {
-                new MovieVM { Title = "Crossing Jordan", SubTitle = "Going across a river", Points = 5, },
-                new MovieVM { Title = "Moving heaven and earth", SubTitle = "About a moving company", Points = 5, },
-            };
             if (IsInDesignMode) {
-                // Code runs in Blend --> create design time data.
+                _events = new List<EventVM> {
+                    new EventVM { Name = "Crossing Jordan", Score = 1.1F },
+                    new EventVM { Name = "Moving heaven and earth", Score = 5.5F },
+                };
             }
             else {
                 // Code runs "for real"
+            }
+
+            // Get the data
+            waitForUrls = new Dictionary<string, WaitHandle>();
+            foreach (var key in urls.Keys) {
+                waitForUrls.Add(key, new AutoResetEvent(false) );
+            }
+
+            GetEntities("EventType", GetEventTypes_OpenReadCompleted);
+            GetEntities("Location", GetLocations_OpenReadCompleted);
+            GetEntities("Member", GetMembers_OpenReadCompleted);
+            GetEntities("Event", GetEvents_OpenReadCompleted);
+
+            BackgroundWorker bw = new BackgroundWorker();
+            bw.DoWork += new DoWorkEventHandler(ReCalculate);
+            bw.RunWorkerAsync();
+        }
+
+        void ReCalculate(object sender, DoWorkEventArgs e) {
+            // Wait for all of the Read functions to complete
+            foreach (var mutex in waitForUrls.Values) {
+                mutex.WaitOne();
+            }
+
+            // Recalculate totals
+            eventsByLocation = new Dictionary<long,List<EventVM>>();
+            foreach (var evt in Events) {
+                if (!eventsByLocation.ContainsKey(evt.LocationId) ) {
+                    eventsByLocation.Add(evt.LocationId, new List<EventVM>());
+                }
+                eventsByLocation[evt.LocationId].Add(evt);
+            }
+            foreach (var loc in Locations) {
+                loc.Score  = eventsByLocation[loc.Id].Average(l => l.Score);
+            }
+
+            eventScoresByUser = new Dictionary<long, List<MemberEventScoreVM>>();
+            foreach (var evt in Events) {
+                foreach (var mes in evt.MemberEventScores) {
+                    if (!eventScoresByUser.ContainsKey(mes.MemberId)) {
+                        eventScoresByUser.Add(mes.MemberId, new List<MemberEventScoreVM>());
+                    }
+                    mes.Date = eventsById[mes.EventId].Date;
+                    eventScoresByUser[mes.MemberId].Add(mes);
+                }
+            }
+            foreach (var member in Members) {
+                IEnumerable<MemberEventScoreVM> evtsThisYear = eventScoresByUser[member.Id].Where(es => es.Date.Value.Year == DateTime.Now.Year);
+                var evtsLastYear = eventScoresByUser[member.Id].Where(es => es.Date.Value.Year == DateTime.Now.Year-1);
+                var evtsTotal = eventScoresByUser[member.Id];
+
+                member.AvgLastYear = average(evtsLastYear);
+                member.AvgThisYear = average(evtsThisYear);
+                member.AvgTotal = average(evtsTotal);
+
+                member.EventsLastYear = count(evtsLastYear);
+                member.EventsThisYear = count(evtsThisYear);
+            }
+        }
+
+        private float average(IEnumerable<MemberEventScoreVM> eventScores) {
+            try { return (float)eventScores.Average(es => es.Score); } catch { }
+            return 0F;
+        }
+
+        private int count(IEnumerable<MemberEventScoreVM> eventScores) {
+            try { return eventScores.Count(); } catch { }
+            return 0;
+        }
+
+        private void GetEntities(string entityName, OpenReadCompletedEventHandler orcDelegate) {
+            Uri uri = new Uri(urls[entityName], UriKind.Absolute);
+            WebClient webClient = new WebClient();
+            webClient.OpenReadCompleted += orcDelegate;
+            webClient.OpenReadAsync(uri, entityName);
+        }
+
+        void GetEvents_OpenReadCompleted(object sender, OpenReadCompletedEventArgs e) {
+            if (e.Error == null) {
+                StreamReader sr = new StreamReader(e.Result);
+                string s = sr.ReadToEnd();
+                var evts = JsonConvert.DeserializeObject<EventVM[]>(s);
+                List<EventVM> evtList = new List<EventVM>();
+                eventsById = new Dictionary<long, EventVM>();
+                foreach (var evt in evts) {
+                    eventsById.Add(evt.Id, evt);
+                    evtList.Add(evt);
+                }
+                Events = evtList;
+            }
+            ((AutoResetEvent)waitForUrls[e.UserState as string]).Set();
+        }
+        void GetEventTypes_OpenReadCompleted(object sender, OpenReadCompletedEventArgs e) {
+            if (e.Error == null) {
+                StreamReader sr = new StreamReader(e.Result);
+                string s = sr.ReadToEnd();
+                var ets = JsonConvert.DeserializeObject<EventTypeVM[]>(s);
+                List<EventTypeVM> etList = new List<EventTypeVM>();
+                eventTypesById = new Dictionary<long, EventTypeVM>();
+                foreach (var et in ets) {
+                    eventTypesById.Add(et.Id, et);
+                    etList.Add(et);
+                }
+                EventTypes = etList;
+            }
+            ((AutoResetEvent)waitForUrls[e.UserState as string]).Set();
+        }
+        void GetLocations_OpenReadCompleted(object sender, OpenReadCompletedEventArgs e) {
+            if (e.Error == null) {
+                StreamReader sr = new StreamReader(e.Result);
+                string s = sr.ReadToEnd();
+                var locs = JsonConvert.DeserializeObject<LocationVM[]>(s);
+                List<LocationVM> locList = new List<LocationVM>();
+                locationsById = new Dictionary<long, LocationVM>();
+                foreach (var loc in locs) {
+                    locationsById.Add(loc.Id, loc);
+                    locList.Add(loc);
+                }
+                Locations = locList;
+            }
+            ((AutoResetEvent)waitForUrls[e.UserState as string]).Set();
+        }
+        private void GetMembers_OpenReadCompleted(object sender, OpenReadCompletedEventArgs e) {
+            if (e.Error == null) {
+                StreamReader sr = new StreamReader(e.Result);
+                string s = sr.ReadToEnd();
+                e.Result.Seek(0, 0);
+                var members = JsonConvert.DeserializeObject<MemberVM[]>(s);
+                var membersList = new List<MemberVM>();
+                membersById = new Dictionary<long, MemberVM>();
+                foreach (var member in members) {
+                    membersById.Add(member.Id, member);
+                    membersList.Add(member);
+                }
+                Members = membersList;
+            }
+            ((AutoResetEvent)waitForUrls[e.UserState as string]).Set();
+        }
+
+
+        public RelayCommand ButtonCommand { get; set; }
+
+
+        /// <summary>
+        /// Gets the Events property.
+        /// TODO Update documentation:
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// This property's value is broadcasted by the Messenger's default instance when it changes.
+        /// </summary>
+        public const string EventsPropertyName = "Events";
+        private List<EventVM> _events = null;
+        public List<EventVM> Events {
+            get { return _events; }
+            set {
+                if (_events == value) {
+                    return;
+                }
+                var oldValue = _events;
+                _events = value;
+                RaisePropertyChanged(EventsPropertyName, oldValue, value, true);
+            }
+        }
+
+        /// <summary>
+        /// Gets the Members property.
+        /// TODO Update documentation:
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// This property's value is broadcasted by the Messenger's default instance when it changes.
+        /// </summary>
+        public const string MembersPropertyName = "Members";
+        private List<MemberVM> _members = null;
+        public List<MemberVM> Members {
+            get { return _members; }
+            set {
+                if (_members == value) {
+                    return;
+                }
+                var oldValue = _members;
+                _members = value;
+                RaisePropertyChanged(MembersPropertyName, oldValue, value, true);
             }
         }
 
@@ -167,21 +376,42 @@ namespace TK.ViewModel
         }
 
         /// <summary>
-        /// Gets the Movies property.
+        /// Gets the EventTypes property.
         /// TODO Update documentation:
         /// Changes to that property's value raise the PropertyChanged event. 
         /// This property's value is broadcasted by the Messenger's default instance when it changes.
         /// </summary>
-        public const string MoviesPropertyName = "Movies";
-        private List<MovieVM> _movies = null;
-        public List<MovieVM> Movies {
-            get { return _movies; }
+        public const string EventTypesPropertyName = "EventTypes";
+        private List<EventTypeVM> _eventTypes = null;
+        public List<EventTypeVM> EventTypes {
+            get { return _eventTypes; }
             set {
-                if (_movies == value) {
+                if (_eventTypes == value) {
                     return;
                 }
-                _movies = value;
-                RaisePropertyChanged(MoviesPropertyName);
+                var oldValue = _eventTypes;
+                _eventTypes = value;
+                RaisePropertyChanged(EventTypesPropertyName, oldValue, value, true);
+            }
+        }
+
+        /// <summary>
+        /// Gets the Locations property.
+        /// TODO Update documentation:
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// This property's value is broadcasted by the Messenger's default instance when it changes.
+        /// </summary>
+        public const string LocationsPropertyName = "Locations";
+        private List<LocationVM> _locations = null;
+        public List<LocationVM> Locations {
+            get { return _locations; }
+            set {
+                if (_locations == value) {
+                    return;
+                }
+                var oldValue = _locations;
+                _locations = value;
+                RaisePropertyChanged(LocationsPropertyName, oldValue, value, true);
             }
         }
 

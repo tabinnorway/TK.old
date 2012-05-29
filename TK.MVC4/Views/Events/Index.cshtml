@@ -1,0 +1,47 @@
+﻿@model IEnumerable<TK.MVC4.Models.EventVM>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Name</th>
+            <th>Score</th>
+            <th>Event type</th>
+            <th>Omtale</th>
+            <th>Location</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) {
+            <tr>
+                <td>@string.Format("{0:yyyy MM dd}", item.Date)</td>
+                <td>@Html.ActionLink(item.Name, "Details", new { id=item.Id })</td>
+                <td style="text-align:right;">@string.Format("{0:#.00}", item.Score)</td>
+                <td>@(item.EventType != null ? item.EventType.Name : "Ukjent")</td>
+                <td>
+                    @if( item.FilmwebId.Contains("articleId")) {
+                        <label style="text-decoration:line-through;">Filmweb</label> <label>|</label>
+                    }
+                    else {
+                        <a href="@string.Format("http://www.filmweb.no/{0}/article{1}.ece", item.FilmwebId.Split(':'))">Filmweb</a> <label>|</label>
+                    }
+                    <a href="@string.Format("http://www.imdb.com/title/{0}/", item.IMDBId)" target="_blank">IMDB</a></td>
+                <td style="text-align:right;">@(item.Location != null ? item.Location.Name : "Ukjent")</td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
+                    @Html.ActionLink("Delete", "Delete", new { id=item.Id })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

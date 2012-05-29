@@ -1,13 +1,14 @@
-﻿<xapCache source="C:\Users\terberge\documents\visual studio 2010\Projects\TK\TK\Bin\Debug\TK.xap" wasSigned="False" certificateThumbprint="" TimeStampUrl="" lastWriteTime="24.05.2012 09:06:19">
+﻿<xapCache source="C:\Users\terberge\documents\visual studio 2010\Projects\TK\TK\Bin\Debug\TK.xap" wasSigned="False" certificateThumbprint="" TimeStampUrl="" lastWriteTime="29.05.2012 16:17:36">
   <file source="C:\Users\terberge\documents\visual studio 2010\Projects\TK\TK\Bin\Debug\WMAppManifest.xml" archivePath="WMAppManifest.xml" lastWriteTime="09.05.2012 16:20:38" />
   <file source="C:\Users\terberge\documents\visual studio 2010\Projects\TK\TK\Background.jpg" archivePath="Background.jpg" lastWriteTime="09.05.2012 16:20:29" />
   <file source="C:\Users\terberge\documents\visual studio 2010\Projects\TK\TK\ApplicationIcon.jpg" archivePath="ApplicationIcon.jpg" lastWriteTime="09.05.2012 16:20:29" />
-  <file source="C:\Users\terberge\documents\visual studio 2010\Projects\TK\TK\obj\Debug\TK.dll" archivePath="TK.dll" lastWriteTime="11.05.2012 17:06:46" />
+  <file source="C:\Users\terberge\documents\visual studio 2010\Projects\TK\TK\obj\Debug\TK.dll" archivePath="TK.dll" lastWriteTime="29.05.2012 16:17:35" />
   <file source="C:\Program Files (x86)\Laurent Bugnion (GalaSoft)\Mvvm Light Toolkit\Binaries\WP71\GalaSoft.MvvmLight.Extras.WP71.dll" archivePath="GalaSoft.MvvmLight.Extras.WP71.dll" lastWriteTime="18.12.2011 10:06:16" />
   <file source="C:\Program Files (x86)\Laurent Bugnion (GalaSoft)\Mvvm Light Toolkit\Binaries\WP71\GalaSoft.MvvmLight.WP71.dll" archivePath="GalaSoft.MvvmLight.WP71.dll" lastWriteTime="18.12.2011 10:06:20" />
   <file source="C:\Program Files (x86)\Microsoft SDKs\Windows Phone\v7.1\Libraries\Silverlight\Microsoft.Phone.Controls.dll" archivePath="Microsoft.Phone.Controls.dll" lastWriteTime="15.09.2011 15:36:26" />
+  <file source="C:\Users\terberge\documents\visual studio 2010\Projects\TK\packages\Newtonsoft.Json.4.5.5\lib\sl4-windowsphone71\Newtonsoft.Json.dll" archivePath="Newtonsoft.Json.dll" lastWriteTime="29.05.2012 11:30:42" />
   <file source="C:\Program Files (x86)\Microsoft SDKs\Expression\Blend\Windows Phone\v7.1\Libraries\System.Windows.Interactivity.dll" archivePath="System.Windows.Interactivity.dll" lastWriteTime="17.08.2011 01:48:22" />
   <file source="C:\Users\terberge\documents\visual studio 2010\Projects\TK\TK\SplashScreenImage.jpg" archivePath="SplashScreenImage.jpg" lastWriteTime="09.05.2012 16:27:53" />
-  <file source="C:\Users\terberge\documents\visual studio 2010\Projects\TK\TK\Bin\Debug\AppManifest.xaml" archivePath="AppManifest.xaml" lastWriteTime="09.05.2012 16:45:40" />
+  <file source="C:\Users\terberge\documents\visual studio 2010\Projects\TK\TK\Bin\Debug\AppManifest.xaml" archivePath="AppManifest.xaml" lastWriteTime="29.05.2012 11:36:53" />
   <file source="C:\Users\terberge\documents\visual studio 2010\Projects\TK\TK\Bin\Debug\SplashScreenImage.jpg" archivePath="SplashScreenImage.jpg" lastWriteTime="09.05.2012 16:27:53" />
 </xapCache>

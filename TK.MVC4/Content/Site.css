@@ -340,7 +340,7 @@ fieldset {
     fieldset label {
         display: block;
         font-size: 1em;
-        font-weight: 600;
+        /*font-weight: 600;*/
     }
 
     fieldset label.checkbox {
@@ -353,7 +353,7 @@ fieldset {
         color: #333;
         font-size: 1em;
         margin: 5px 0 6px 0;
-        padding: 5px;
+        padding: 2px;
         width: 300px;
     }
 

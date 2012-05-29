@@ -129,6 +129,9 @@ table.display thead th div.DataTables_sort_wrapper span {
 .dataTables_length {
 	width: 40%;
 	float: left;
+	vertical-align: middle;
+	margin-top:5px;
+	height: 100%;
 }
 
 .dataTables_filter {
