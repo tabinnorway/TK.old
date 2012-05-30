@@ -58,6 +58,7 @@ namespace TK.MVC4.Models
 
         public int EventsLastYear { get; set; }
         public int EventsThisYear { get; set; }
+        public int EventsTotal { get; set; }
         public float AvgTotal { get; set; }
         public float AvgThisYear { get; set; }
         public float AvgLastYear { get; set; }
@@ -306,6 +307,8 @@ namespace TK.MVC4.Models
         public int Score { get; set; }
 
         public DateTime? Date { get; set; }
+        public MemberVM Member { get; set; }
+        public EventVM Event { get; set; }
 
 #if(!SILVERLIGHT)
         public static MemberEventScoreVM FromMemberEventScore(MemberEventScore mes) {

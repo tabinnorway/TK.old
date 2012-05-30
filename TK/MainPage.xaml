@@ -32,7 +32,7 @@
 
             <controls:PanoramaItem Header="{Binding FirstPageName}">
                 <!--Double line list with text wrapping-->
-                <ListBox Margin="10,0,-12,0" ItemsSource="{Binding Events}">
+                <ListBox Margin="10,0,-12,0" ItemsSource="{Binding Events}" x:Name="EventsLB" SelectionChanged="EventsLB_SelectionChanged" SelectedItem="{Binding Path=SelectedEvent,Mode=TwoWay}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
@@ -80,7 +80,7 @@
 
             <controls:PanoramaItem Header="{Binding MembersPageName}">
                 <!--Double line list with text wrapping-->
-                <ListBox Margin="0,0,-12,0" ItemsSource="{Binding Members}">
+                <ListBox Margin="0,0,-12,0" ItemsSource="{Binding Members}" x:Name="MembersLB" SelectionChanged="MembersLB_SelectionChanged">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,10">

@@ -11,6 +11,8 @@ using System.Linq;
 using Newtonsoft.Json;
 using System.Threading;
 using System.ComponentModel;
+using System.Windows.Navigation;
+using Microsoft.Phone.Controls;
 
 
 namespace TK.ViewModel
@@ -41,8 +43,8 @@ namespace TK.ViewModel
 
         private Dictionary<long, EventTypeVM> eventTypesById = null;
         private Dictionary<long, LocationVM> locationsById = null;
-        private Dictionary<long, MemberVM> membersById = null;
-        private Dictionary<long, EventVM> eventsById = null;
+        public Dictionary<long, MemberVM> MembersById = null;
+        public Dictionary<long, EventVM> EventsById = null;
 
         private Dictionary<long, List<MemberEventScoreVM>> eventScoresByUser = null;
         private Dictionary<long, List<EventVM>> eventsByLocation = null;
@@ -101,21 +103,32 @@ namespace TK.ViewModel
                     if (!eventScoresByUser.ContainsKey(mes.MemberId)) {
                         eventScoresByUser.Add(mes.MemberId, new List<MemberEventScoreVM>());
                     }
-                    mes.Date = eventsById[mes.EventId].Date;
+                    mes.Member = MembersById[mes.MemberId];
+                    mes.Event = EventsById[mes.EventId];
+                    mes.Date = EventsById[mes.EventId].Date;
                     eventScoresByUser[mes.MemberId].Add(mes);
                 }
             }
             foreach (var member in Members) {
-                IEnumerable<MemberEventScoreVM> evtsThisYear = eventScoresByUser[member.Id].Where(es => es.Date.Value.Year == DateTime.Now.Year);
-                var evtsLastYear = eventScoresByUser[member.Id].Where(es => es.Date.Value.Year == DateTime.Now.Year-1);
-                var evtsTotal = eventScoresByUser[member.Id];
+                foreach (var mes in member.MemberEventScores) {
+                    mes.Member = MembersById[mes.MemberId];
+                    mes.Event = EventsById[mes.EventId];
+                }
+                member.MemberEventScores = member.MemberEventScores.OrderByDescending(m => m.Event.Date).ToList();
 
-                member.AvgLastYear = average(evtsLastYear);
-                member.AvgThisYear = average(evtsThisYear);
-                member.AvgTotal = average(evtsTotal);
+                if (eventScoresByUser.ContainsKey(member.Id)) {
+                    IEnumerable<MemberEventScoreVM> evtsThisYear = eventScoresByUser[member.Id].Where(es => es.Date.Value.Year == DateTime.Now.Year);
+                    var evtsLastYear = eventScoresByUser[member.Id].Where(es => es.Date.Value.Year == DateTime.Now.Year - 1);
+                    var evtsTotal = eventScoresByUser[member.Id];
 
-                member.EventsLastYear = count(evtsLastYear);
-                member.EventsThisYear = count(evtsThisYear);
+                    member.AvgLastYear = average(evtsLastYear);
+                    member.AvgThisYear = average(evtsThisYear);
+                    member.AvgTotal = average(evtsTotal);
+
+                    member.EventsTotal = count(evtsTotal);
+                    member.EventsLastYear = count(evtsLastYear);
+                    member.EventsThisYear = count(evtsThisYear);
+                }
             }
         }
 
@@ -142,9 +155,9 @@ namespace TK.ViewModel
                 string s = sr.ReadToEnd();
                 var evts = JsonConvert.DeserializeObject<EventVM[]>(s);
                 List<EventVM> evtList = new List<EventVM>();
-                eventsById = new Dictionary<long, EventVM>();
+                EventsById = new Dictionary<long, EventVM>();
                 foreach (var evt in evts) {
-                    eventsById.Add(evt.Id, evt);
+                    EventsById.Add(evt.Id, evt);
                     evtList.Add(evt);
                 }
                 Events = evtList;
@@ -188,9 +201,9 @@ namespace TK.ViewModel
                 e.Result.Seek(0, 0);
                 var members = JsonConvert.DeserializeObject<MemberVM[]>(s);
                 var membersList = new List<MemberVM>();
-                membersById = new Dictionary<long, MemberVM>();
+                MembersById = new Dictionary<long, MemberVM>();
                 foreach (var member in members) {
-                    membersById.Add(member.Id, member);
+                    MembersById.Add(member.Id, member);
                     membersList.Add(member);
                 }
                 Members = membersList;
@@ -219,6 +232,27 @@ namespace TK.ViewModel
                 var oldValue = _events;
                 _events = value;
                 RaisePropertyChanged(EventsPropertyName, oldValue, value, true);
+            }
+        }
+
+
+        /// <summary>
+        /// Gets the SelectedEvent property.
+        /// TODO Update documentation:
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// This property's value is broadcasted by the Messenger's default instance when it changes.
+        /// </summary>
+        public const string SelectedEventPropertyName = "SelectedEvent";
+        private EventVM _selectedEvent = null;
+        public EventVM SelectedEvent {
+            get { return _selectedEvent; }
+            set {
+                if (_selectedEvent == value) {
+                    return;
+                }
+                var oldValue = _selectedEvent;
+                _selectedEvent = value;
+                RaisePropertyChanged(SelectedEventPropertyName, oldValue, value, true);
             }
         }
 
