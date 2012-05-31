@@ -18,7 +18,7 @@ namespace TK
         private void MembersLB_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             if (e.AddedItems.Count > 0) {
                 selectedMember = (MemberVM)e.AddedItems[0];
-                var targetPage = new Uri("/Views/OldMemberDetails.xaml", UriKind.Relative);
+                var targetPage = new Uri("/Views/MemberDetails.xaml?id=" + selectedMember.Id, UriKind.Relative);
 
                 // reset selection of ListBox
                 ((ListBox)sender).SelectedIndex = -1;

@@ -37,4 +37,3 @@ C:\Users\terberge\documents\visual studio 2010\Projects\TK\TK\Bin\Debug\icons\ap
 C:\Users\terberge\documents\visual studio 2010\Projects\TK\TK\Bin\Debug\icons\appbar.feature.email.rest.png
 C:\Users\terberge\documents\visual studio 2010\Projects\TK\TK\obj\Debug\Views\EventDetails.g.i.cs
 C:\Users\terberge\documents\visual studio 2010\Projects\TK\TK\obj\Debug\Views\MemberDetails.g.i.cs
-C:\Users\terberge\documents\visual studio 2010\Projects\TK\TK\obj\Debug\Views\OldMemberDetails.g.i.cs

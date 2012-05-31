@@ -315,40 +315,41 @@ namespace TK.ViewModel
         }
 
         /// <summary>
-        /// Gets the SoFarThisYearPageName property.
+        /// Gets the LocationsPageName property.
         /// TODO Update documentation:
         /// Changes to that property's value raise the PropertyChanged event. 
         /// This property's value is broadcasted by the Messenger's default instance when it changes.
         /// </summary>
-        public const string SoFarThisYearPageNamePropertyName = "SoFarThisYearPageName";
-        private string _soFarThisYearPageName = "hittil i år";
-        public string SoFarThisYearPageName {
-            get { return _soFarThisYearPageName; }
+        public const string LocationsPageNamePropertyName = "LocationsPageName";
+        private string _locationsPageName = "lokasjoner";
+        public string LocationsPageName {
+            get { return _locationsPageName; }
             set {
-                if (_soFarThisYearPageName == value) {
+                if (_locationsPageName == value) {
                     return;
                 }
-                _soFarThisYearPageName = value;
-                RaisePropertyChanged(SoFarThisYearPageNamePropertyName);
+                var oldValue = _locationsPageName;
+                _locationsPageName = value;
+                RaisePropertyChanged(LocationsPageNamePropertyName, oldValue, value, true);
             }
         }
 
         /// <summary>
-        /// Gets the TotalsPageName property.
+        /// Gets the StatsPageName property.
         /// TODO Update documentation:
         /// Changes to that property's value raise the PropertyChanged event. 
         /// This property's value is broadcasted by the Messenger's default instance when it changes.
         /// </summary>
-        public const string TotalsPageNamePropertyName = "TotalsPageName";
-        private string _totalsPageName = "totalt";
-        public string TotalsPageName {
-            get { return _totalsPageName; }
+        public const string StatsPageNamePropertyName = "StatsPageName";
+        private string _statsPageName = "statistikk";
+        public string StatsPageName {
+            get { return _statsPageName; }
             set {
-                if (_totalsPageName == value) {
+                if (_statsPageName == value) {
                     return;
                 }
-                _totalsPageName = value;
-                RaisePropertyChanged(TotalsPageNamePropertyName);
+                _statsPageName = value;
+                RaisePropertyChanged(StatsPageNamePropertyName);
             }
         }
 

@@ -48,7 +48,7 @@ namespace TK.Views
 
         private void Panorama_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             PanoramaItem newPage = e.AddedItems[0] as PanoramaItem;
-            this.ApplicationBar.IsVisible = newPage.Header != null && newPage.Header.ToString().ToLower().Equals("detaljer");
+            //this.ApplicationBar.IsVisible = newPage.Header != null && newPage.Header.ToString().ToLower().Equals("detaljer");
         }
     }
 }
