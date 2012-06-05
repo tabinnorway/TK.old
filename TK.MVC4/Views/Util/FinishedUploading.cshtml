@@ -1,0 +1,18 @@
+﻿@{
+    ViewBag.Title = "FinishedUploading";
+}
+
+<h2>Lastet opp</h2>
+<h3>Vellykket</h3>
+<ul>
+    @foreach (string success in ViewBag.successes) {
+        <li><nobr>@success</nobr></li>
+    }
+</ul>
+
+<h3>Feil</h3>
+<ul>
+    @foreach (string failure in ViewBag.failures) {
+        <li><nobr>@failure</nobr></li>
+    }
+</ul>

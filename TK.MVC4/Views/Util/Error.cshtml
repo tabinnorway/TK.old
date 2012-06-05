@@ -1,0 +1,13 @@
+﻿@model List<string>
+
+@{
+    ViewBag.Title = "Error";
+}
+
+<h2>En eller flere feil oppstod ved opplasting av data</h2>
+<h3>Feilmeldinger:</h3>
+<ul>
+    @foreach (var err in Model) {
+        <li>@err</li>
+    }
+</ul>
