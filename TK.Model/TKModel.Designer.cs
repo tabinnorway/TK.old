@@ -826,7 +826,7 @@ namespace TK.Model
         /// </summary>
         [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
         [DataMemberAttribute()]
-        public Nullable<global::System.Int32> Score
+        public Nullable<global::System.Double> Score
         {
             get
             {
@@ -841,8 +841,8 @@ namespace TK.Model
                 OnScoreChanged();
             }
         }
-        private Nullable<global::System.Int32> _Score;
-        partial void OnScoreChanging(Nullable<global::System.Int32> value);
+        private Nullable<global::System.Double> _Score;
+        partial void OnScoreChanging(Nullable<global::System.Double> value);
         partial void OnScoreChanged();
     
         /// <summary>

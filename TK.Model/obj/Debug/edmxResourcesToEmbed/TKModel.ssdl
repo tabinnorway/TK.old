@@ -53,7 +53,7 @@
     <Property Name="Id" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
     <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="128" />
     <Property Name="Capacity" Type="int" />
-    <Property Name="Score" Type="int" />
+    <Property Name="Score" Type="float" />
     <Property Name="CreatedAt" Type="datetime" Nullable="false" />
     <Property Name="LastUpdated" Type="datetime" />
   </EntityType>

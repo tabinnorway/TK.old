@@ -19,10 +19,18 @@ namespace TK.Model.Servers
             }
         }
 
+        public bool HasMember(Member member) {
+            try {
+                return entities.Members.Where(m => m.Nickname == member.Nickname).Count() > 0;
+            }
+            catch {
+            }
+            return false;
+        }
         public Member AddMember(Member member, out string error) {
             error = null;
             Member retval = null;
-            if (member.Id > 0) {
+            if (member.Id > 0 || HasMember(member)) {
                 error = "Can not add a member that has already been added";
             }
             else {

@@ -57,7 +57,7 @@
     <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
     <Property Name="Name" Type="String" Nullable="false" MaxLength="128" Unicode="true" FixedLength="false" />
     <Property Name="Capacity" Type="Int32" />
-    <Property Name="Score" Type="Int32" />
+    <Property Name="Score" Type="Double" />
     <Property Name="CreatedAt" Type="DateTime" Nullable="false" />
     <Property Name="LastUpdated" Type="DateTime" />
     <NavigationProperty Name="Events" Relationship="TKModel.FK_Events_Locations" FromRole="Locations" ToRole="Events" />

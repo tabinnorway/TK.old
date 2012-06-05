@@ -25,14 +25,28 @@ namespace TK.MVC4.Controllers
 
         //
         // GET: /Util/
+        [Authorize(Roles="Administrator,Power User")] 
         public ActionResult Index() {
             return View();
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrator,Power User")]
         public ActionResult Index(IEnumerable<HttpPostedFileBase> files) {
-            int fileNo = 0;
-            foreach (var file in files) {
+            int[] sequence = { 3, 1, 0, 2 };
+
+            List<string> successes = new List<string>();
+            List<string> failures = new List<string>();
+
+            var fileList = files.ToList();
+            foreach (int fileNo in sequence) {
+                HttpPostedFileBase file = null;
+                try {
+                    file = fileList[fileNo];
+                }
+                catch {
+                }
+
                 if (file != null && file.ContentLength > 0) {
                     Encoding inEnc = Encoding.GetEncoding("IBM865");
                     StreamReader sr = new StreamReader(file.InputStream, inEnc);
@@ -42,32 +56,58 @@ namespace TK.MVC4.Controllers
                     Dictionary<string, int> newLines = new Dictionary<string, int>();
                     while ((line = sr.ReadLine()) != null) {
                         if (isFirstLine) { isFirstLine = false; continue; }
-                        if (line.Contains("Scary")) {
-                            Console.WriteLine(line);
-                        }
 
                         string error = null;
                         switch (fileNo) {
                             case 0:
                                 makeEvent(line, out error);
+                                if (error != null) {
+                                    failures.Add(string.Format(@"Feil ""{0}"" ved opprettelsen av arrangement fra ""{1}""", error, line));
+                                    error = null;
+                                }
+                                else {
+                                    successes.Add(string.Format(@"La til arrangement fra: ""{0}""", line));
+                                }
                                 break;
                             case 1:
                                 makeMember(line, out error);
+                                if (error != null) {
+                                    failures.Add(string.Format(@"Feil {0} ved opprettelsen av medlem fra ""{1}""", error, line));
+                                    error = null;
+                                }
+                                else {
+                                    successes.Add(string.Format(@"La til medlem fra: ""{0}""", line));
+                                }
                                 break;
                             case 2:
                                 makeScore(line, out error);
+                                if (error != null) {
+                                    failures.Add(string.Format(@"Feil ""{0}"" ved lagring av terningkast fra ""{1}""", error, line));
+                                    error = null;
+                                }
+                                else {
+                                    successes.Add(string.Format(@"La til terningkast fra: ""{0}""", line));
+                                }
                                 break;
                             case 3:
                                 makeLocation(line, out error);
+                                if (error != null) {
+                                    failures.Add(string.Format(@"Feil ""{0}"" ved opprettelsen av lokasjon fra ""{1}""", error, line));
+                                    error = null;
+                                }
+                                else {
+                                    successes.Add(string.Format(@"La til lokasjon fra: ""{0}""", line));
+                                }
                                 break;
                             default:
                                 break;
                         }
                     }
                 }
-                fileNo++;
             }
-            return RedirectToAction("Index");
+            ViewBag.successes = successes;
+            ViewBag.failures = failures;
+            return View( "FinishedUploading" );
         }
 
         private void makeScore(string line, out string error) {
@@ -81,28 +121,34 @@ namespace TK.MVC4.Controllers
 
         private void makeMember(string line, out string error) {
             error = null;
-            MemberVM member = MemberVM.FromCSVLine(line);
-            var memberadded = memberServer.AddMember(member.ToMember(), out error);
-            if (memberadded == null || error != null) {
-                Console.WriteLine(error);
+            try {
+                MemberVM member = MemberVM.FromCSVLine(line);
+                var memberadded = memberServer.AddMember(member.ToMember(), out error);
+            }
+            catch (Exception x) {
+                error = x.Message;
             }
         }
 
         private void makeLocation(string line, out string error) {
             error = null;
-            LocationVM loc = LocationVM.FromCSVLine(line);
-            var locAdded = locationServer.AddLocation(loc.ToDataObject(), out error);
-            if (locAdded == null || error != null) {
-                Console.WriteLine(error);
+            try {
+                LocationVM loc = LocationVM.FromCSVLine(line);
+                var locAdded = locationServer.AddLocation(loc.ToDataObject(), out error);
+            }
+            catch (Exception x) {
+                error = x.Message;
             }
         }
 
         private void makeEvent(string line, out string error) {
             error = null;
-            EventVM evt = EventVM.FromCSVLine(line);
-            var evtAdded = evtServer.AddEvent(evt.ToEvent(), out error);
-            if (evtAdded == null || error != null) {
-                Console.WriteLine(error);
+            try {
+                EventVM evt = EventVM.FromCSVLine(line);
+                var evtAdded = evtServer.AddEvent(evt.ToEvent(), out error);
+            }
+            catch (Exception x) {
+                error = x.Message;
             }
         }
 

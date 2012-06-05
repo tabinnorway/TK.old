@@ -20,10 +20,18 @@ namespace TK.Model.Servers
                 }
             }
         }
+        public bool HasLocation(Location loc) {
+            try {
+                return entities.Locations.Where(l => l.Name == loc.Name).Count() > 0;
+            }
+            catch {
+            }
+            return false;
+        }
         public Location AddLocation(Location loc, out string error) {
             error = null;
             Location retval = null;
-            if (loc.Id > 0) {
+            if (loc.Id > 0 || HasLocation(loc) ) {
                 error = "Can not add a location that has already been added";
             }
             else {
@@ -42,23 +50,10 @@ namespace TK.Model.Servers
             return retval;
         }
         public long GetLocationIdByName( string name ) {
-            string theVal = "ÅL STORESALEN";
-            if (name == theVal) {
-                Console.WriteLine("At Ål");
-                foreach( string key in locationsByName.Keys ) {
-                    if (key.Contains("STORE")) {
-                        string comparer = "'" + name + "' compares to\n'" + key + "' gives";
-                        int res = string.Compare(key, name);
-                        comparer += res.ToString();
-                    }
-                }
-            }
             if (locationsByName.ContainsKey(name)) {
                 return locationsByName[name].Id;
             }
-            if (theVal.Equals(name)) {
-                Console.WriteLine("They seem to be equal");
-            }
+
             try {
                 return entities.Locations.Where(loc => loc.Name.Equals(name, StringComparison.CurrentCulture)).SingleOrDefault().Id;
             }

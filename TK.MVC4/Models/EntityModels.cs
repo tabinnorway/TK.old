@@ -113,6 +113,11 @@ namespace TK.MVC4.Models
             if (line == null) { return null; }
             string[] words = line.Split(';');
 
+            if (words == null || words.Count() != 6) {
+                throw new Exception(string.Format(@"Could not parse ""{0}"" into a member", line));
+            }
+
+
             string fornavn = words[0];
             string mellomnavn = null;
             string etternavn = words[1];
@@ -205,7 +210,17 @@ namespace TK.MVC4.Models
             if (line == null) { return null; }
             string[] words = line.Split(';');
 
-            DateTime when = DateTime.Parse(words[0]);
+            if (words == null || words.Count() != 5) {
+                throw new Exception(string.Format(@"Could not parse ""{0}"" into an event", line));
+            }
+
+            DateTime when;
+            try {
+                when = DateTime.Parse(words[0]);
+            }
+            catch (Exception x) {
+                throw new Exception(string.Format(@"Could not parse ""{0}"" into an event, ""{1}"" could not be parsed into a date: {2}", line, words[0], x.Message));
+            }
             string name = words[1];
             string sal = words[2];
             string imdblink = words[3];
@@ -215,6 +230,22 @@ namespace TK.MVC4.Models
             filmwebLink = Regex.Replace(filmwebLink, "http://www.filmweb.no/(.*)/article(.*).ece", "$1:$2");
             filmwebLink = Regex.Replace(filmwebLink, "http://www2.filmweb.no/film/article.jhtml\\?articleID=(.*)", "articleId:$1" );
 
+            long locationId;
+            long eventTypeId;
+
+            try {
+                locationId = (new LocationDataServer()).GetLocationIdByName(sal);
+            }
+            catch {
+                throw new Exception(string.Format(@"Could not parse {0} into an event, could not find location ""{1}"" in database", line, sal));
+            }
+            try {
+                eventTypeId = (new EventTypeDataServer()).GetEventTypeIdByName("Film");
+            }
+            catch {
+                throw new Exception(string.Format(@"Could not parse {0} into an event, could not find event type ""Film"" in database", line));
+            }
+
             return new EventVM {
                 CreatedAt = DateTime.Now,
                 Date = when,
@@ -222,10 +253,10 @@ namespace TK.MVC4.Models
                 IMDBId = imdblink,
                 LastUpdated = DateTime.Now,
                 Location = null,
-                LocationId = (new LocationDataServer()).GetLocationIdByName(sal),
+                LocationId = locationId,
                 Name = name,
                 Id = 0,
-                EventTypeId = (new EventTypeDataServer()).GetEventTypeIdByName("Film"),
+                EventTypeId = eventTypeId,
             };
         }
         public Event ToEvent() {
@@ -255,7 +286,7 @@ namespace TK.MVC4.Models
         [DataMember]
         public string Name { get; set; }
         [DataMember]
-        public float? Score { get; set; }
+        public double? Score { get; set; }
 
 #if(!SILVERLIGHT)
         public static LocationVM FromDataObject(Location loc) {
@@ -276,11 +307,15 @@ namespace TK.MVC4.Models
                 Id = this.Id,
                 LastUpdated = this.LastUpdated,
                 Name = this.Name,
-                Score = (int)this.Score,
+                Score = this.Score,
             };
         }
         public static LocationVM FromCSVLine(string line) {
             string[] words = line.Split(';');
+
+            if (words == null || words.Count() != 2) {
+                throw new Exception(string.Format(@"Could not parse ""{0}"" into a location", line));
+            }
             return new LocationVM {
                 Name = words[0],
                 Capacity = int.Parse(words[1]),
@@ -338,12 +373,28 @@ namespace TK.MVC4.Models
             if (line == null) { return null; }
             string[] words = line.Split(';');
 
+            if (words == null || words.Count() != 6) {
+                throw new Exception(string.Format(@"Could not parse ""{0}"" into an score", line));
+            }
+
             DateTime when = DateTime.Parse(words[0]);
             string name = words[1];
             int score = int.Parse(words[2]);
 
-            Member who = (new MemberDataServer()).Members.Where(m => m.Nickname.ToUpper() == name.ToUpper()).SingleOrDefault();
-            Event evt = (new EventDataServer()).GetEventByDate(when);
+            Member who = null;
+            try {
+                who = (new MemberDataServer()).Members.Where(m => m.Nickname.ToUpper() == name.ToUpper()).SingleOrDefault();
+            }
+            catch (Exception x) {
+                throw new Exception(string.Format(@"Could not parse ""{0}"" into an score, got error looking for member {1}: {2}", line, name, x.Message));
+            }
+            Event evt = null;
+            try {
+                evt = (new EventDataServer()).GetEventByDate(when);
+            }
+            catch(Exception x ) {
+                throw new Exception(string.Format(@"Could not parse ""{0}"" into an score, got error looking for event on date {1}: {2}", line, when, x.Message));
+            }
 
             return new MemberEventScoreVM {
                 EventId = evt.Id,

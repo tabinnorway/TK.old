@@ -12,10 +12,18 @@ namespace TK.Model.Servers
             entities = new TKEntities();
         }
 
+        public bool HasMemberEventScore(MemberEventScore mes) {
+            try {
+                return entities.MemberEventScores.Where(m => m.EventId == mes.EventId && m.MemberId == mes.MemberId).Count() > 0;
+            }
+            catch {
+            }
+            return false;
+        }
         public MemberEventScore AddMemberEventScore( MemberEventScore mes, out string error ) {
             error = null;
             MemberEventScore retval = null;
-            if (mes.Id > 0) {
+            if (mes.Id > 0 || HasMemberEventScore(mes)) {
                 error = "Can not add a member score that has already been added";
             }
             else {

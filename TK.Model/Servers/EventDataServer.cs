@@ -16,11 +16,18 @@ namespace TK.Model.Servers
         public IQueryable<Event> GetAllIncludeScores() {
             return entities.Events.Include("MemberEventScores").Include("EventType").Include("Location").OrderByDescending(e => e.Date);
         }
-
+        public bool HasEvent(Event evt) {
+            try {
+                return entities.Events.Where(e => e.LocationId == evt.LocationId && e.Date == evt.Date).Count() > 0;
+            }
+            catch {
+            }
+            return false;
+        }
         public Event AddEvent( Event evt, out string error ) {
             error = null;
             Event retval = null;
-            if (evt.Id > 0) {
+            if (evt.Id > 0 || HasEvent(evt)) {
                 error = "Can not add an event that has already been added";
             }
             else {
